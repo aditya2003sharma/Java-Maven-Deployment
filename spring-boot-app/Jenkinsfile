@@ -44,7 +44,7 @@ pipeline {
     stage('Build and Push Docker Image') {
 
       environment {
-        DOCKER_IMAGE = "aditya28jan2003/ultimate-cicd:${BUILD_NUMBER}"
+        DOCKER_IMAGE = "aditya28jan2003/maven-aditya-docker-agent:${BUILD_NUMBER}"
       }
 
       steps {
