@@ -84,17 +84,19 @@ pipeline {
         withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
 
           sh '''
-            git config --global user.email "aditya28jan2003@gmail.com"
-            git config --global user.name "Aditya Sharma"
+    git config --global user.email "aditya28jan2003@gmail.com"
+    git config --global user.name "Aditya Sharma"
 
-            sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" spring-boot-app-manifests/deployment.yml
+    git config --global --add safe.directory /var/lib/jenkins/workspace/Java
 
-            git add spring-boot-app-manifests/deployment.yml
+    sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" spring-boot-app-manifests/deployment.yml
 
-            git commit -m "Update deployment image to version ${BUILD_NUMBER}" || true
+    git add spring-boot-app-manifests/deployment.yml
 
-            git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git HEAD:main
-          '''
+    git commit -m "Update deployment image to version ${BUILD_NUMBER}" || true
+
+    git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git HEAD:main
+'''
         }
       }
     }
