@@ -2,7 +2,7 @@ pipeline {
   agent {
     docker {
       image 'aditya28jan2003/jenkins-maven-agent:v1'
-      args '--user root -v /var/run/docker.sock:/var/run/docker.sock'
+      args '--user root -v /var/run/docker.sock:/var/run/docker.sock -v /root/.gitconfig:/root/.gitconfig'
     }
   }
   stages {
@@ -55,24 +55,23 @@ pipeline {
       }
     }
     stage('Update Deployment File') {
-  environment {
-    GIT_REPO_NAME = "Java-Maven-Deployment"
-    GIT_USER_NAME = "aditya2003sharma"
-  }
-  steps {
-    withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
-      sh '''
-        git config --global --add safe.directory /var/lib/jenkins/workspace/Java
-        git config --global --add safe.directory "*"
-        git config --global user.email "aditya28jan2003@gmail.com"
-        git config --global user.name "Aditya Sharma"
-        sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" spring-boot-app-manifests/deployment.yml
-        git add spring-boot-app-manifests/deployment.yml
-        git commit -m "Update deployment image to version ${BUILD_NUMBER}" || true
-        git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git HEAD:main
-      '''
+      environment {
+        GIT_REPO_NAME = "Java-Maven-Deployment"
+        GIT_USER_NAME = "aditya2003sharma"
+      }
+      steps {
+        withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
+          sh """
+            git config --global --add safe.directory /var/lib/jenkins/workspace/Java
+            git config --global user.email "aditya28jan2003@gmail.com"
+            git config --global user.name "Aditya Sharma"
+            sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" spring-boot-app-manifests/deployment.yml
+            git add spring-boot-app-manifests/deployment.yml
+            git commit -m "Update deployment image to version ${BUILD_NUMBER}" || true
+            git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git HEAD:main
+          """
+        }
+      }
     }
-  }
-}
   }
 }
