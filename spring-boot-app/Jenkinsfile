@@ -44,26 +44,30 @@ pipeline {
 
     stage('Build and Push Docker Image') {
 
-      environment {
+    environment {
         DOCKER_IMAGE = "aditya28jan2003/jenkins-maven-agent:${BUILD_NUMBER}"
-      }
+    }
 
-      steps {
+    steps {
 
         dir('spring-boot-app') {
 
-          script {
+            script {
 
-            sh 'docker build -t ${DOCKER_IMAGE} .'
+                sh """
+                    docker build -t ${DOCKER_IMAGE} .
+                """
 
-            docker.withRegistry('https://index.docker.io/v1/', 'docker-cred') {
+                docker.withRegistry('https://index.docker.io/v1/', 'docker-cred') {
 
-              sh 'docker push ${DOCKER_IMAGE}'
+                    sh """
+                        docker push ${DOCKER_IMAGE}
+                    """
+                }
             }
-          }
         }
-      }
     }
+}
 
     stage('Update Deployment File') {
 
